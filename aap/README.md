@@ -16,6 +16,43 @@ DRAFT → PROPOSED → EVALUATED → ACCEPTED → COMMITTED
 
 The CLI is intentionally simple so it can be hardened into a real project without rewriting from scratch.
 
+## Project Structure
+
+```
+aap/
+├── adapters/
+│   ├── git_adapter.py      # Guarded git commit/tag/push helper
+│   └── __init__.py
+├── decisions/              # Decision log (one file per proposal)
+├── evidence/
+│   └── example/
+│       └── results.json    # Sample evidence payload
+├── hooks/
+│   └── pre-receive         # Git pre-receive hook for AAP enforcement
+├── locks/                  # File locks for concurrent access
+├── policies/
+│   └── default.yaml        # Sample policy
+├── proposals/              # Proposal store (created via CLI)
+├── tests/
+│   └── test_state.py
+├── aap.db                  # SQLite database for proposals and audit
+├── api.py                  # FastAPI wrapper (optional)
+├── api_tokens.txt          # API token allowlist
+├── audit.log               # Audit event log
+├── audit.py                # Audit logging utilities
+├── auth_allowlist.txt      # Authorized decision-makers
+├── auth.py                 # Authentication (TOTP, allowlist)
+├── cli.py                  # CLI entrypoint
+├── config.py               # Configuration
+├── db.py                   # SQLite persistence layer
+├── evaluator.py            # Evidence validator
+├── gate.py                 # Human accept/reject gate
+├── policy.py               # Policy loader/evaluator
+├── state.py                # State machine + validation
+├── storage.py              # Proposal persistence (YAML)
+└── utils.py                # Shared utilities
+```
+
 ## Layout
 
 - `cli.py` — CLI entrypoint (`python -m aap.cli ...`)
