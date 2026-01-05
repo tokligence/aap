@@ -5,6 +5,7 @@ This repository hosts a runnable MVP of the Agent Authority Protocol control-pla
 - Core code: `aap/` (CLI entrypoint `aap`, FastAPI wrapper optional)
 - Quickstart: `docs/quickstart.md`
 - Roadmap: `docs/roadmap.md`
+- Protocol spec: [tokligence/aap-spec](https://github.com/tokligence/aap-spec)
 - License: Apache-2.0
 
 ## Project Structure
@@ -32,10 +33,6 @@ This repository hosts a runnable MVP of the Agent Authority Protocol control-pla
 │   ├── policy.py           # Policy loader/evaluator
 │   ├── state.py            # State machine + validation
 │   └── storage.py          # Proposal persistence
-├── aap-spec/               # Protocol specification
-│   ├── RFC-0001-agent-authority-protocol.md
-│   ├── terminology.md
-│   └── non-goals.md
 ├── docs/                   # Documentation
 │   ├── quickstart.md       # Setup guide
 │   └── roadmap.md          # Future plans
