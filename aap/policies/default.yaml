@@ -1,0 +1,17 @@
+name: default
+applies_to:
+  - low
+  - medium
+  - high
+rules:
+  forbid_paths:
+    - auth/
+    - infra/prod/
+    - secrets/
+  require_constraints:
+    - no_production_push_by_agent
+  require_evidence:
+    - unit_tests
+    - integration_tests
+    - lint
+  max_latency_delta_ms: 5

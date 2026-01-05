@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""
+Pre-receive hook that blocks branch updates unless the target commit
+is tagged with an AAP proposal tag (aap/<id>) whose proposal is ACCEPTED/COMMITTED.
+It also blocks pushes of AAP tags unless the proposal is ACCEPTED/COMMITTED.
+
+Usage:
+  ln -s ../../aap/hooks/pre-receive .git/hooks/pre-receive
+"""
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+from typing import List
+
+TAG_PREFIX = "aap/"
+ALLOWED_STATES = {"accepted", "committed"}
+
+
+def repo_root() -> Path:
+    out = subprocess.check_output(["git", "rev-parse", "--show-toplevel"]).decode().strip()
+    return Path(out)
+
+
+def list_tags_pointing(commit: str) -> List[str]:
+    if commit == "0" * 40:
+        return []
+    try:
+        out = subprocess.check_output(
+            ["git", "for-each-ref", "--format=%(refname:short)", "--points-at", commit, f"refs/tags/{TAG_PREFIX}*"]
+        ).decode()
+        return [line.strip() for line in out.splitlines() if line.strip()]
+    except subprocess.CalledProcessError:
+        return []
+
+
+def proposal_state(repo: Path, proposal_id: str) -> str:
+    path = repo / "aap" / "proposals" / f"{proposal_id}.yaml"
+    if not path.exists():
+        return ""
+    try:
+        import yaml  # type: ignore
+
+        data = yaml.safe_load(path.read_text()) or {}
+    except Exception:
+        import json
+
+        data = json.loads(path.read_text())
+    return (data.get("state") or "").lower()
+
+
+def check_branch_update(repo: Path, new_commit: str) -> bool:
+    tags = list_tags_pointing(new_commit)
+    for tag in tags:
+        if not tag.startswith(TAG_PREFIX):
+            continue
+        proposal_id = tag[len(TAG_PREFIX) :]
+        state = proposal_state(repo, proposal_id)
+        if state in ALLOWED_STATES:
+            return True
+    return False
+
+
+def check_tag_push(repo: Path, refname: str) -> bool:
+    if not refname.startswith("refs/tags/" + TAG_PREFIX):
+        return True
+    proposal_id = refname.split("/", 2)[-1].replace(TAG_PREFIX, "", 1)
+    state = proposal_state(repo, proposal_id)
+    return state in ALLOWED_STATES
+
+
+def main() -> int:
+    repo = repo_root()
+    for line in sys.stdin:
+        old, new, refname = line.strip().split()
+        if new == "0" * 40:
+            # Deletions allowed
+            continue
+        if refname.startswith("refs/heads/"):
+            if not check_branch_update(repo, new):
+                sys.stderr.write(
+                    f"[AAP] Rejecting push to {refname}: new commit {new} missing valid {TAG_PREFIX}<id> tag with ACCEPTED/COMMITTED proposal\n"
+                )
+                return 1
+        if refname.startswith("refs/tags/"):
+            if not check_tag_push(repo, refname):
+                sys.stderr.write(
+                    f"[AAP] Rejecting tag push {refname}: proposal not ACCEPTED/COMMITTED or missing\n"
+                )
+                return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

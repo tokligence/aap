@@ -1,0 +1,8 @@
+recursive-include aap/policies *.yaml
+recursive-include aap/evidence *.*
+include aap/hooks/pre-receive
+include aap/auth_allowlist.txt
+include aap/api_tokens.txt
+exclude aap/aap.db
+exclude aap/audit.log
+exclude aap/locks/*

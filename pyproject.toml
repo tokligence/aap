@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aap-mvp"
+version = "0.1.0"
+description = "Agent Authority Protocol (AAP) MVP control-plane CLI/API"
+readme = "aap/README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pyyaml>=6.0.0",
+]
+license = { text = "Apache-2.0" }
+authors = [{ name = "Tokligence" }]
+keywords = ["agents", "governance", "authority", "control-plane", "cli"]
+
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.23.0",
+]
+dev = [
+    "pytest>=7.4.0",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.23.0",
+]
+
+[project.scripts]
+aap = "aap.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["aap*"]
+
+[tool.setuptools.package-data]
+aap = [
+    "policies/*.yaml",
+    "evidence/**/*",
+    "hooks/pre-receive",
+    "auth_allowlist.txt",
+    "api_tokens.txt",
+]

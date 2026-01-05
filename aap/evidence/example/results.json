@@ -1,0 +1,9 @@
+{
+  "unit_tests": "pass",
+  "integration_tests": "pass",
+  "lint": "pass",
+  "p95_latency_delta_ms": 3.2,
+  "runner": "local-demo",
+  "run_id": "demo-run-001",
+  "artifact_sha256": "demoartifacthash"
+}

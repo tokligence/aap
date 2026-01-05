@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+.DS_Store
+
+# AAP runtime artifacts
+aap/aap.db
+aap/audit.log
+aap/locks/
+aap/proposals/*
+!aap/proposals/.gitkeep
+aap/decisions/*
+!aap/decisions/.gitkeep
+*.egg-info/
+dist/
+build/
+
+# Virtualenvs
+.venv/
+env/
+venv/

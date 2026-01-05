@@ -1,0 +1,3 @@
+# Allowed human decision makers (one email per line)
+you@example.com
+tester
